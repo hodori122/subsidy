@@ -66,6 +66,13 @@ def build():
     for d in items:
         fn = _slugfile(d["_key"]) + ".html"
         tags = ", ".join(d.get("tags", []))
+        img_card = ""
+        if d.get("image"):
+            src = "../" + d["image"]
+            img_card = (f'<div class="card"><div class="label">대표 이미지 · 티스토리 본문 첫 이미지로 넣으면 썸네일이 됩니다</div>'
+                        f'<img src="{src}" alt="" style="width:100%;border-radius:8px;display:block">'
+                        f'<div class="row" style="margin-top:8px"><a href="{src}" download style="flex:1"><button style="width:100%">이미지 저장</button></a></div>'
+                        f'<div class="label" style="margin-top:6px">아이폰은 이미지를 길게 눌러 "사진에 저장"</div></div>')
         body = f"""<div class="wrap">
 <a href="../index.html">← 목록</a>
 <h1>{html.escape(d['title'])}</h1>
@@ -74,6 +81,7 @@ def build():
 <div class="label" style="margin-top:8px">카테고리: {html.escape(d.get('category',''))}</div></div>
 <div class="card"><label class="mark"><input type="checkbox" id="done"> 티스토리에 올림</label>
 {('<div style="margin-top:6px"><a href="' + html.escape(d['source_url']) + '" target="_blank" rel="noopener">공식 페이지에서 금액·기한 확인하기</a></div>') if d.get('source_url') else ''}</div>
+{img_card}
 <div class="card body" id="body">{d['html']}</div>
 <pre id="src" hidden>{html.escape(d['html'])}</pre>
 </div>

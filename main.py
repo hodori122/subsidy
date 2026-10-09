@@ -4,7 +4,7 @@
   py main.py --reset   초안 기록을 초기화하고 drafts 폴더를 비운 뒤 새로 생성
 """
 import os, re, sys, glob, json, datetime as dt, requests, yaml
-import collect, rank, draft, preview
+import collect, rank, draft, preview, images
 
 CFG = yaml.safe_load(open("config.yaml", encoding="utf-8"))
 
@@ -37,6 +37,12 @@ def main():
         if p["source"] == "gov24": p = collect.enrich_gov24(p)
         d = draft.build(p, related)
         base = f"drafts/{today}_{slug(d['title'])}"
+        key = os.path.basename(base)
+        try:
+            img = images.make(p, f"docs/img/{preview._slugfile(key)}.png")
+            d["image"] = "img/" + os.path.basename(img)
+        except Exception as e:
+            print("이미지 생성 실패:", e)
         with open(base + ".html", "w", encoding="utf-8") as f:
             f.write(f"<!-- 제목: {d['title']} -->\n<!-- 태그: {', '.join(d['tags'])} -->\n<!-- 카테고리: {d['category']} -->\n<!-- 출처: {d['source_url']} -->\n{d['html']}")
         with open(base + ".json", "w", encoding="utf-8") as f:

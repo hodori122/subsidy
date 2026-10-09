@@ -6,9 +6,9 @@ def _p(s): return html.escape((s or "").strip()).replace("\n", "<br>")
 
 def template_html(p: dict) -> str:
     year = dt.date.today().year
-    return f"""
+    import intro
+    return intro.intro_html(p) + f"""
 <p>{_p(p['summary'])}</p>
-<p>이 글에서는 <strong>{_p(p['title'])}</strong>의 지원 대상, 지원 금액, 신청 방법과 기한을 정리합니다. 신청 전 꼭 확인할 조건도 함께 안내드립니다.</p>
 
 <h2>{_p(p['title'])} 한눈에 보기</h2>
 <table>
@@ -38,6 +38,7 @@ def template_html(p: dict) -> str:
 <h2>신청하러 가기</h2>
 <p>{('<a href="' + html.escape(p['url']) + '" target="_blank" rel="noopener">▶ 공식 신청·상세 페이지 바로가기</a>') if p.get('url') else '정부24에서 서비스명으로 검색하세요.'}</p>
 {('<p>문의: ' + _p(p.get('contact')) + '</p>') if p.get('contact') else ''}
+{__import__('intro').closing_html(p)}
 <p><em>본 글은 {year}년 {dt.date.today().month}월 기준 공공데이터를 바탕으로 작성되었으며, 최신 내용은 공식 페이지에서 확인하세요.</em></p>
 """
 
@@ -97,14 +98,19 @@ def fmt_won(v: float) -> str:
     if v >= 10**4: return f"{int(v / 10**4):,}만원"
     return f"{int(v):,}원"
 
+def amount_label(text):
+    """'최대'가 명시된 경우에만 '최대'를 붙여 과장 방지"""
+    v = max_amount(text)
+    if not v: return None
+    return ("최대 " if "최대" in (text or "") or "한도" in (text or "") else "") + fmt_won(v)
+
 def make_title(p: dict, related=None) -> str:
     y = dt.date.today().year
     t = p["title"]
-    v = max_amount(p.get("content"))        # 제목 금액은 대표(전국) 기준만: 지역 금액 섞으면 과장됨
-    allv = [v] if v else []
+    lab = amount_label(p.get("content"))    # 제목 금액은 대표(전국) 기준만: 지역 금액 섞으면 과장됨
     tail = " (지역별 추가 지원 포함)" if related else ""
-    if allv:
-        return f"{y}년 {t} 신청방법·대상 총정리 최대 {fmt_won(max(allv))}{tail}"
+    if lab:
+        return f"{y}년 {t} 신청방법·대상 총정리 ({lab}){tail}"
     return f"{y}년 {t} 신청방법·지원대상·기한 총정리{tail}"
 
 def related_html(related) -> str:
