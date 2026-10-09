@@ -1,0 +1,51 @@
+# ===== 수집 설정 =====
+# 공공데이터포털(data.go.kr)에서 발급받은 인증키 (Decoding 키) → 환경변수 DATA_GO_KR_KEY 로 설정
+sources:
+  gov24: true          # 행정안전부 보조금24 공공서비스 API
+  youth: false         # 온통청년 청년정책 API (별도 키 YOUTH_API_KEY 필요)
+
+# 돈 되는 키워드 우선순위: 제목/요약에 포함되면 점수 가산
+hot_keywords:
+  - {word: "청년", score: 5}
+  - {word: "신혼", score: 5}
+  - {word: "전세", score: 6}
+  - {word: "대출", score: 7}
+  - {word: "소상공인", score: 6}
+  - {word: "창업", score: 4}
+  - {word: "출산", score: 5}
+  - {word: "육아", score: 4}
+  - {word: "장려금", score: 6}
+  - {word: "바우처", score: 4}
+  - {word: "환급", score: 6}
+  - {word: "세금", score: 5}
+  - {word: "일자리", score: 3}
+
+# 제외 키워드 (검색 수요 낮거나 지역이 너무 좁은 것)
+exclude_keywords: ["읍", "면사무소", "리 "]
+
+# 수집 범위 (전체 약 1만 건 → 100건 x 최대 200페이지)
+max_pages: 200
+per_page: 100
+
+# 비슷한 주제 묶기: 0.0~1.0, 높을수록 엄격 (0.7 권장)
+similarity: 0.7
+# 한 글에 함께 소개할 지역별·유사 지원 최대 개수
+max_related: 8
+
+# 하루 최대 초안 수
+max_drafts_per_run: 5
+
+# 신청기한이 지난 건 제외
+skip_expired: true
+
+# Claude API로 글 다듬기 (ANTHROPIC_API_KEY 필요). false면 템플릿만 사용
+use_claude_rewrite: true
+claude_model: "claude-sonnet-4-6"
+
+# 카카오톡 '나에게 보내기' 알림 (KAKAO_REST_KEY 필요)
+notify_kakao: true
+# 미리보기 사이트 주소. 비워두면 GitHub Pages 주소 자동 사용
+site_url: ""
+
+# 텔레그램 알림 (선택) TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+notify_telegram: false
