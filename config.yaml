@@ -25,6 +25,9 @@ exclude_keywords: ["읍", "면사무소", "리 "]
 
 # 글 서두 인사에 쓰일 블로그 닉네임 (예: "지원금 챙기는 호돌이")
 blog_nickname: "지원금 알리미"
+# 내 블로그 주소 (RSS로 기존 글을 읽어 '함께 보면 좋은 글' 내부 링크를 넣음)
+blog_url: "https://papalennon.tistory.com"
+related_min_score: 0.12
 
 # 수집 범위 (전체 약 1만 건 → 100건 x 최대 200페이지)
 max_pages: 200

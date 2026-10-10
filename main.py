@@ -3,7 +3,7 @@
   py main.py --reset   지원금 초안 기록 초기화 후 새로 생성
 """
 import os, re, sys, glob, json, datetime as dt, requests, yaml
-import collect, rank, draft, preview, images
+import collect, rank, draft, preview, images, related
 
 CFG = yaml.safe_load(open("config.yaml", encoding="utf-8"))
 
@@ -22,6 +22,8 @@ def reset(con):
 
 def save_draft(d, p, today):
     """초안 저장 + 썸네일 + 알림용 항목 반환"""
+    try: related.attach(d, p)
+    except Exception as e: print("관련 글 연결 실패:", e)
     base = f"drafts/{today}_{slug(d['title'])}"
     key = os.path.basename(base)
     try:
