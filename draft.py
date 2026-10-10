@@ -117,14 +117,24 @@ def amount_label(text):
     if not v: return None
     return ("최대 " if "최대" in (text or "") or "한도" in (text or "") else "") + fmt_won(v)
 
+def _strip_agency(t):
+    """제목 앞의 '국토교통부 ', '경상남도 창원시 ' 같은 기관 접두어 제거 (지역명은 유지)"""
+    return re.sub(r"^(\S+(부|청|처|위원회|공단|공사|재단|진흥원))\s+", "", t.strip())
+
 def make_title(p: dict, related=None) -> str:
+    """네이버 노출 기준 35자 안쪽으로: 키워드 앞, 금액 뒤"""
     y = dt.date.today().year
-    t = p["title"]
-    lab = amount_label(p.get("content"))    # 제목 금액은 대표(전국) 기준만: 지역 금액 섞으면 과장됨
-    tail = " (지역별 추가 지원 포함)" if related else ""
-    if lab:
-        return f"{y}년 {t} 신청방법·대상 총정리 ({lab}){tail}"
-    return f"{y}년 {t} 신청방법·지원대상·기한 총정리{tail}"
+    t = _strip_agency(p["title"])
+    lab = amount_label(p.get("content"))
+    cands = [
+        f"{y} {t} 신청방법·대상 ({lab})" if lab else f"{y} {t} 신청방법·대상·기한",
+        f"{y} {t} 신청방법 ({lab})" if lab else f"{y} {t} 신청방법·대상",
+        f"{t} 신청방법 ({lab})" if lab else f"{t} 신청방법·대상",
+        f"{t} ({lab})" if lab else f"{t} 신청방법",
+    ]
+    for c in cands:
+        if len(c) <= 35: return c
+    return cands[-1][:34] + "…"
 
 def related_html(related) -> str:
     if not related: return ""
