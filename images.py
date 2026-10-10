@@ -13,6 +13,8 @@ THEMES = {  # 주제별 색: (배경, 진한색, 포인트)
     "소상공인":  ("#fdf4ea", "#9a4a12", "#f3bf86"),
     "어르신":    ("#f3f0fa", "#4b3a8c", "#c2b5ea"),
     "생활지원":  ("#eff6ef", "#2c6b2f", "#a8d5a3"),
+    "금융":      ("#fbf3e4", "#7a4b00", "#f0c56a"),
+    "청약":      ("#eef1f8", "#2a3f7a", "#aab8e6"),
 }
 FONT_DIR = "fonts"
 FONT_URLS = {
@@ -70,7 +72,7 @@ def make(p, out_path):
 
     pad = 80
     tag_f = _font("reg", 30)
-    tag = f"{topic} 지원"
+    tag = {"금융": "금리 비교", "청약": "청약 일정"}.get(topic, f"{topic} 지원")
     tw = d.textlength(tag, font=tag_f)
     d.rounded_rectangle([pad, pad, pad + tw + 44, pad + 58], radius=29, fill=ink)
     d.text((pad + 22, pad + 12), tag, font=tag_f, fill=bg)
@@ -86,7 +88,7 @@ def make(p, out_path):
 
     lab = draft.amount_label(p.get("content"))
     sub_f = _font("reg", 38)
-    sub = f"{lab} · 대상·신청방법 총정리" if lab else "지원 대상 · 금액 · 신청방법 총정리"
+    sub = p.get("subtitle") or (f"{lab} · 대상·신청방법 총정리" if lab else "지원 대상 · 금액 · 신청방법 총정리")
     d.text((pad, y + 16), sub, font=sub_f, fill=ink)
 
     foot_f = _font("reg", 28)

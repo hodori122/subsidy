@@ -56,3 +56,14 @@ mail_smtp: ""
 
 # 텔레그램 알림 (선택) TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 notify_telegram: false
+
+# ===== 금리 비교 (금융감독원 API, FSS_API_KEY 필요) =====
+rates_enabled: true
+rates_weekday: 0          # 0=월요일 … 6=일요일
+rates_fixed_only: true    # 적금은 정액적립식만
+
+# ===== 청약 일정 (청약홈 API, DATA_GO_KR_KEY 공용) =====
+apply_enabled: true
+apply_weekday: 1          # 모음글 요일 (1=화요일)
+apply_days: 14            # 앞으로 N일 내 접수 시작 단지
+apply_single_min_units: 800   # 이 세대수 이상이면 개별 글도 생성
