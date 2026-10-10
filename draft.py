@@ -4,6 +4,10 @@ CFG = yaml.safe_load(open("config.yaml", encoding="utf-8"))
 
 def _p(s): return html.escape((s or "").strip()).replace("\n", "<br>")
 
+def _short(s, n=70):
+    s = re.sub(r"\s+", " ", (s or "").replace("○", "").replace("ㅇ", " ")).strip(" -·")
+    return s if len(s) <= n else s[:n].rsplit(" ", 1)[0] + "… (아래 참고)"
+
 def template_html(p: dict) -> str:
     year = dt.date.today().year
     import intro
@@ -13,9 +17,9 @@ def template_html(p: dict) -> str:
 <h2>{_p(p['title'])} 한눈에 보기</h2>
 <table>
 <tr><th>항목</th><th>내용</th></tr>
-<tr><td>지원 내용</td><td>{_p(p['content'])}</td></tr>
-<tr><td>지원 대상</td><td>{_p(p['target'])}</td></tr>
-<tr><td>신청 기한</td><td>{_p(p['deadline'] or '상시 / 공고 확인')}</td></tr>
+<tr><td>지원 내용</td><td>{_p(amount_label(p['content']) or _short(p['content']))}</td></tr>
+<tr><td>지원 대상</td><td>{_p(_short(p['target']))}</td></tr>
+<tr><td>신청 기한</td><td>{_p(_short(p['deadline'], 40) or '상시 / 공고 확인')}</td></tr>
 <tr><td>소관 기관</td><td>{_p(p['agency'])}</td></tr>
 </table>
 
