@@ -50,5 +50,9 @@ notify_kakao: true
 # 미리보기 사이트 주소. 비워두면 GitHub Pages 주소 자동 사용
 site_url: ""
 
+# 메일 알림 (MAIL_USER, MAIL_APP_PASSWORD 필요 / Gmail·네이버 자동 인식)
+notify_email: true
+mail_smtp: ""
+
 # 텔레그램 알림 (선택) TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 notify_telegram: false

@@ -31,7 +31,7 @@ def main():
     os.makedirs("drafts", exist_ok=True)
     today = dt.date.today().isoformat()
     lines = [f"📝 {today} 지원금 초안 {len(groups)}건"]
-    short = []
+    short, mail_items = [], []
     for g in groups:
         p, related = g[0], g[1:]
         if p["source"] == "gov24": p = collect.enrich_gov24(p)
@@ -51,6 +51,9 @@ def main():
             con.execute("UPDATE policy SET drafted=1 WHERE id=?", (x["id"],))
         extra = f" (+유사 {len(related)}건 묶음)" if related else ""
         lines.append(f"• {d['title']}{extra}")
+        mail_items.append({"title": d["title"], "tags": d["tags"],
+                           "page_url": (preview.site_url() + "d/" + preview._slugfile(key) + ".html") if preview.site_url() else "",
+                           "image_path": ("docs/" + d["image"]) if d.get("image") else ""})
         short.append("• " + (p["title"][:20] + ("…" if len(p["title"]) > 20 else "")))
         print("초안:", base + ".html" + extra)
     con.commit()
@@ -64,6 +67,13 @@ def main():
             kakao.send(text, url)
         except Exception as e:
             print("카톡 알림 실패:", e)
+    if CFG.get("notify_email", True) and os.environ.get("MAIL_USER") and os.environ.get("MAIL_APP_PASSWORD"):
+        try:
+            import mailer
+            mailer.send(f"📝 {dt.date.today().month}월 {dt.date.today().day}일 지원금 초안 {len(groups)}건",
+                        mail_items, preview.site_url())
+        except Exception as e:
+            print("메일 알림 실패:", e)
 
 if __name__ == "__main__":
     main()
