@@ -68,17 +68,24 @@ label.mark{display:flex;gap:8px;align-items:center;font-weight:600}
 &lt;p&gt;&lt;a href=&quot;https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000458&amp;amp;pblancNo=2026000458&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;▶ 청약홈 모집공고 바로가기&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;분양가·일정은 변경될 수 있으니 최종 공고문을 꼭 확인하세요. 출처: 한국부동산원 청약홈&lt;/em&gt;&lt;/p&gt;
 </pre>
-<pre id="ai" hidden>아래는 정부 지원금 안내 블로그 초안이야. 이걸 사람이 직접 쓴 것처럼 자연스럽게 다듬어줘.
+<pre id="ai" hidden>아래는 정부 지원금·금리·청약 안내 블로그 초안이야. 이걸 사람이 직접 쓴 것처럼 자연스럽게 다듬고, 운영자의 생각이 담긴 문단을 추가해줘.
+
+[운영자 설정]
+경남 창원에 사는 30대 직장인. 지원금·금리·청약 정보를 직접 찾아보고 정리하는 블로그를 운영 중. 말투는 존댓말, 친근하지만 가볍지 않게.
 
 [지켜야 할 것]
 1. 금액, 대상 조건, 기한, 기관명, 링크는 절대 바꾸거나 새로 지어내지 마. 원문에 없는 정보가 필요하면 &quot;공고 확인 필요&quot;라고 써.
 2. h2, h3, 표, 링크 같은 HTML 구조는 그대로 유지해. 출력은 HTML만, 설명이나 코드 표시 없이.
-3. 공고문 말투를 옆집 아는 사람이 설명해 주듯 풀어 써. 단, 조건을 뭉뚱그리지 말고 숫자는 정확히 남겨.
-4. 서두 두 문단은 통째로 새로 써도 돼. 이 지원이 왜 쓸만한지, 어떤 사람한테 특히 좋은지로 시작해.
-5. 중간에 [내 생각: ...] 형태로 내가 직접 채울 자리를 2곳 만들어줘. &quot;신청해 보니 헷갈렸던 점&quot;이나 &quot;주변 사례&quot; 같은 걸 넣을 자리.
+3. 공고문 말투를 옆집 아는 사람이 설명해 주듯 풀어 써. 조건을 뭉뚱그리지 말고 숫자는 정확히 남겨.
+4. 서두 두 문단은 통째로 새로 써. 이 지원이 왜 쓸만한지, 어떤 사람한테 특히 좋은지로 시작해.
+5. 운영자 생각 문단을 2곳 추가해. 위치는 본문 중간(지원 내용이나 표 다음)과 신청 방법 다음. 각 2~4문장. 내용은 이런 것들로:
+   - 조건을 보고 느낀 점 (예: &quot;소득 기준이 생각보다 넉넉해서 맞벌이도 해볼 만합니다&quot;)
+   - 신청할 때 헷갈릴 만한 부분과 그 이유
+   - 비슷한 지원과 비교했을 때의 장단점
+   - 어떤 사람은 서두르고 어떤 사람은 안 해도 되는지
+   단, &quot;제가 신청해 봤더니&quot;, &quot;제 주변 사람이 받았는데&quot; 같은 직접 경험담은 쓰지 마. 정보를 읽고 판단한 의견만 써.
 6. &quot;무조건&quot;, &quot;100%&quot;, &quot;꼭 받으세요&quot; 같은 과장은 쓰지 마.
-7. 블로그 말투는 존댓말, 친근하지만 가볍지 않게. 이모지는 한두 개 이하.
-8. 글 전체 길이는 원문과 비슷하게. 늘리기 위해 뻔한 말을 덧붙이지 마.
+7. 이모지는 한두 개 이하. 글 전체 길이는 원문의 1.2배 이내.
 
 [초안]
 
@@ -101,7 +108,7 @@ label.mark{display:flex;gap:8px;align-items:center;font-weight:600}
 </pre>
 <div class="card"><div class="label">AI로 문장 다듬기</div>
 <div class="row"><button style="flex:1" onclick="copyText('ai','프롬프트+초안 복사됨 · AI 앱에 붙여넣기')">AI 다듬기용 복사</button><a href="https://claude.ai/new" target="_blank" rel="noopener" style="flex:1"><button style="width:100%">Claude 열기</button></a></div>
-<div class="label" style="margin-top:6px">복사 → Claude(또는 다른 AI)에 붙여넣기 → 결과 HTML을 티스토리 HTML 모드에 붙여넣기 → [내 생각] 2곳 채우기</div></div>
+<div class="label" style="margin-top:6px">복사 → Claude(또는 다른 AI)에 붙여넣기 → 결과를 읽고 의견 문단이 본인 생각과 다르면 그 부분만 고치기 → 티스토리 HTML 모드에 붙여넣기</div></div>
 </div>
 <div class="bar"><button onclick="copyText('src','HTML 복사됨 (PC HTML모드용)')">HTML 복사</button><button class="main" onclick="copyRich()">본문 복사</button></div><div class="toast" id="toast"></div>
 <script>
