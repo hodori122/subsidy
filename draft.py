@@ -8,13 +8,36 @@ def _short(s, n=70):
     s = re.sub(r"\s+", " ", (s or "").replace("○", "").replace("ㅇ", " ")).strip(" -·")
     return s if len(s) <= n else s[:n].rsplit(" ", 1)[0] + "… (아래 참고)"
 
-def template_html(p: dict) -> str:
-    year = dt.date.today().year
+HEAD = {  # 글마다 소제목 표현을 섞어 구조 반복을 줄임
+    "summary": ["{t} 한눈에 보기", "핵심 요약", "{t} 핵심 정리", "먼저 요약부터"],
+    "target":  ["지원 대상", "누가 받을 수 있나요?", "신청 자격", "대상 조건"],
+    "content": ["지원 내용", "얼마나 지원되나요?", "지원 금액과 혜택", "받을 수 있는 혜택"],
+    "how":     ["신청 방법", "어떻게 신청하나요?", "신청 절차", "신청하는 법"],
+    "faq":     ["자주 묻는 질문", "헷갈리기 쉬운 점", "궁금한 점 정리", "신청 전 확인할 것"],
+    "go":      ["신청하러 가기", "바로 신청하기", "공식 안내 확인", "신청 링크"],
+}
+
+def _section_order(key):
     import intro
+    return intro.pick([("target", "content", "how"), ("content", "target", "how"), ("content", "how", "target")], key, "order")
+
+def template_html(p: dict, related=None) -> str:
+    import intro, faq
+    year, k = dt.date.today().year, p["id"]
+    H = {s: intro.pick(v, k, "h" + s).format(t=_p(p["title"])) for s, v in HEAD.items()}
+    sections = {
+        "target":  f"<h2>{H['target']}</h2>\n<p>{_p(p['target'])}</p>\n",
+        "content": f"<h2>{H['content']}</h2>\n<p>{_p(p['content'])}</p>\n",
+        "how":     (f"<h2>{H['how']}</h2>\n<p>{_p(p['how'] or '소관 기관 또는 정부24(보조금24)에서 신청할 수 있습니다.')}</p>\n"
+                    + (('<h3>구비 서류</h3><p>' + _p(p.get('docs')) + '</p>\n') if p.get('docs') else '')),
+    }
+    body_sections = "".join(sections[s] for s in _section_order(k))
+    faq_html = faq.build(p, related)
+    link = ('<a href="' + html.escape(p['url']) + '" target="_blank" rel="noopener">▶ 공식 신청·상세 페이지 바로가기</a>') if p.get('url') else '정부24에서 서비스명으로 검색하세요.'
     return intro.intro_html(p) + f"""
 <p>{_p(p['summary'])}</p>
 
-<h2>{_p(p['title'])} 한눈에 보기</h2>
+<h2>{H['summary']}</h2>
 <table>
 <tr><th>항목</th><th>내용</th></tr>
 <tr><td>지원 내용</td><td>{_p(amount_label(p['content']) or _short(p['content']))}</td></tr>
@@ -23,26 +46,12 @@ def template_html(p: dict) -> str:
 <tr><td>소관 기관</td><td>{_p(p['agency'])}</td></tr>
 </table>
 
-<h2>지원 대상</h2>
-<p>{_p(p['target'])}</p>
-
-<h2>지원 내용</h2>
-<p>{_p(p['content'])}</p>
-
-<h2>신청 방법</h2>
-<p>{_p(p['how'] or '소관 기관 또는 정부24(보조금24)에서 신청할 수 있습니다.')}</p>
-{('<h3>구비 서류</h3><p>' + _p(p.get('docs')) + '</p>') if p.get('docs') else ''}
-
-<h2>자주 묻는 질문</h2>
-<h3>중복 수급이 가능한가요?</h3>
-<p>유사 지원과 중복 여부는 공고마다 다릅니다. 신청 전 소관 기관에 확인하세요.</p>
-<h3>신청 후 언제 지급되나요?</h3>
-<p>심사 기간은 기관별로 다르며, 보통 신청 후 2~8주 정도 걸립니다.</p>
-
-<h2>신청하러 가기</h2>
-<p>{('<a href="' + html.escape(p['url']) + '" target="_blank" rel="noopener">▶ 공식 신청·상세 페이지 바로가기</a>') if p.get('url') else '정부24에서 서비스명으로 검색하세요.'}</p>
+{body_sections}
+{('<h2>' + H['faq'] + '</h2>' + chr(10) + faq_html) if faq_html else ''}
+<h2>{H['go']}</h2>
+<p>{link}</p>
 {('<p>문의: ' + _p(p.get('contact')) + '</p>') if p.get('contact') else ''}
-{__import__('intro').closing_html(p)}
+{intro.closing_html(p)}
 <p><em>본 글은 {year}년 {dt.date.today().month}월 기준 공공데이터를 바탕으로 작성되었으며, 최신 내용은 공식 페이지에서 확인하세요.</em></p>
 """
 
@@ -137,10 +146,11 @@ def make_tags(p: dict) -> list:
     return [t for t in base if t][:10]
 
 def build(p: dict, related=None) -> dict:
-    body = template_html(p)
+    body = template_html(p, related)
     rel = related_html(related)
     if rel:
-        body = body.replace("<h2>자주 묻는 질문</h2>", rel + "\n<h2>자주 묻는 질문</h2>")
+        import re as _re
+        body = _re.sub(r"(<h2>(?:신청하러 가기|바로 신청하기|공식 안내 확인|신청 링크)</h2>)", rel + "\n\\1", body, count=1)
     if CFG.get("use_claude_rewrite") and os.environ.get("ANTHROPIC_API_KEY"):
         try: body = claude_rewrite(p, body)
         except Exception as e: print("rewrite skip:", e)
