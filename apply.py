@@ -2,6 +2,7 @@
 data.go.kr 에서 '한국부동산원_청약홈 분양정보 조회 서비스' 활용신청 (DATA_GO_KR_KEY 공용)"""
 import os, html, datetime as dt, requests, yaml
 CFG = yaml.safe_load(open("config.yaml", encoding="utf-8"))
+FORCE = os.environ.get("FORCE_WEEKLY", "").lower() in ("1", "yes", "true")  # 요일 무시하고 즉시 생성
 BASE = "https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1/"
 
 def _get(path, params):
@@ -93,7 +94,7 @@ def weekly_drafts(con):
     if not rows: return out
     week = f"{today.year}-W{today.isocalendar()[1]}"
     y, m, d = today.year, today.month, today.day
-    if today.weekday() == CFG.get("apply_weekday", 1):
+    if FORCE or today.weekday() == CFG.get("apply_weekday", 1):
         p = {"id": f"apply:roundup:{week}", "title": "이번 주 아파트 청약 일정", "summary": "2주 내 접수 시작 단지 모음", "content": f"{len(rows)}곳", "subtitle": f"{m}월 {d}일 기준 · 2주 내 접수 {len(rows)}곳",
              "target": "", "agency": "한국부동산원", "url": "https://www.applyhome.co.kr", "how": "", "deadline": ""}
         out.append(({"id": p["id"], "title": f"{m}월 {d}일 기준 전국 아파트 청약 일정 총정리 ({len(rows)}곳, 지역별)",

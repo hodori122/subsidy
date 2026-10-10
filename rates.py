@@ -2,6 +2,7 @@
 키: https://finlife.fss.or.kr 회원가입 → 오픈API → 인증키 → 환경변수 FSS_API_KEY"""
 import os, html, datetime as dt, requests, yaml
 CFG = yaml.safe_load(open("config.yaml", encoding="utf-8"))
+FORCE = os.environ.get("FORCE_WEEKLY", "").lower() in ("1", "yes", "true")  # 요일 무시하고 즉시 생성
 BASE = "https://finlife.fss.or.kr/finlifeapi/"
 GROUPS = {"020000": "은행", "030300": "저축은행"}
 
@@ -96,7 +97,7 @@ def top_mortgage(n=10):
 def weekly_drafts():
     """월요일(또는 config의 rates_weekday)에만 생성. 반환: [(draft_dict, pseudo_policy)]"""
     today = dt.date.today()
-    if today.weekday() != CFG.get("rates_weekday", 0): return []
+    if not FORCE and today.weekday() != CFG.get("rates_weekday", 0): return []
     y, m, d = today.year, today.month, today.day
     week = f"{y}-W{today.isocalendar()[1]}"
     out = []
