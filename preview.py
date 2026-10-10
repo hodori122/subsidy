@@ -27,6 +27,21 @@ button{font:inherit;font-size:14px;font-weight:600;border:1px solid var(--line);
 label.mark{display:flex;gap:8px;align-items:center;font-weight:600}
 """
 
+PROMPT = """아래는 정부 지원금 안내 블로그 초안이야. 이걸 사람이 직접 쓴 것처럼 자연스럽게 다듬어줘.
+
+[지켜야 할 것]
+1. 금액, 대상 조건, 기한, 기관명, 링크는 절대 바꾸거나 새로 지어내지 마. 원문에 없는 정보가 필요하면 "공고 확인 필요"라고 써.
+2. h2, h3, 표, 링크 같은 HTML 구조는 그대로 유지해. 출력은 HTML만, 설명이나 코드 표시 없이.
+3. 공고문 말투를 옆집 아는 사람이 설명해 주듯 풀어 써. 단, 조건을 뭉뚱그리지 말고 숫자는 정확히 남겨.
+4. 서두 두 문단은 통째로 새로 써도 돼. 이 지원이 왜 쓸만한지, 어떤 사람한테 특히 좋은지로 시작해.
+5. 중간에 [내 생각: ...] 형태로 내가 직접 채울 자리를 2곳 만들어줘. "신청해 보니 헷갈렸던 점"이나 "주변 사례" 같은 걸 넣을 자리.
+6. "무조건", "100%", "꼭 받으세요" 같은 과장은 쓰지 마.
+7. 블로그 말투는 존댓말, 친근하지만 가볍지 않게. 이모지는 한두 개 이하.
+8. 글 전체 길이는 원문과 비슷하게. 늘리기 위해 뻔한 말을 덧붙이지 마.
+
+[초안]
+"""
+
 JS = """
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600)}
 function fallbackCopy(text){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}
@@ -84,6 +99,10 @@ def build():
 {img_card}
 <div class="card body" id="body">{d['html']}</div>
 <pre id="src" hidden>{html.escape(d['html'])}</pre>
+<pre id="ai" hidden>{html.escape(PROMPT + d['html'])}</pre>
+<div class="card"><div class="label">AI로 문장 다듬기</div>
+<div class="row"><button style="flex:1" onclick="copyText('ai','프롬프트+초안 복사됨 · AI 앱에 붙여넣기')">AI 다듬기용 복사</button><a href="https://claude.ai/new" target="_blank" rel="noopener" style="flex:1"><button style="width:100%">Claude 열기</button></a></div>
+<div class="label" style="margin-top:6px">복사 → Claude(또는 다른 AI)에 붙여넣기 → 결과 HTML을 티스토리 HTML 모드에 붙여넣기 → [내 생각] 2곳 채우기</div></div>
 </div>
 <div class="bar"><button onclick="copyText('src','HTML 복사됨 (PC HTML모드용)')">HTML 복사</button><button class="main" onclick="copyRich()">본문 복사</button></div>"""
         js = f"""const K='done:{d['_key']}',c=document.getElementById('done');try{{c.checked=localStorage.getItem(K)==='1'}}catch(e){{}}
